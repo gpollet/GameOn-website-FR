@@ -14,6 +14,8 @@ const formData = document.querySelectorAll(".formData")
 const modalCloseButton = document.querySelector(".close")
 const modalSubmitButton = document.querySelector(".btn-submit")
 
+// Add event listener to form inputs
+
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal))
 
@@ -59,6 +61,7 @@ function validate() {
   ) {
     console.log("Validation failed")
     event.preventDefault()
+    displayFormErrors()
   }
 }
 
@@ -89,12 +92,21 @@ function checkEmail() {
 }
 
 // Check if birthdate is filled
+// function checkBirthdate() {
+//   if (
+//     Date.parse(document.getElementById("birthdate").value) !== NaN ||
+//     Date.parse(document.getElementById("birthdate").value) !==
+//       undefined
+//   ) {
+//     birthdateIsValid = true
+//   }
+// }
+
 function checkBirthdate() {
-  if (
-    Date.parse(document.getElementById("birthdate").value) !== NaN ||
-    Date.parse(document.getElementById("birthdate").value) !==
-      undefined
-  ) {
+  let inputtedBirthdate = Date.parse(
+    document.getElementById("birthdate").value
+  )
+  if (!isNaN(inputtedBirthdate)) {
     birthdateIsValid = true
   }
 }
@@ -128,5 +140,79 @@ function checkTournamentLocation() {
 function checkTOS() {
   if (document.getElementById("checkbox1").checked) {
     TOSAcceptedIsValid = true
+  }
+}
+
+function displayFormErrors() {
+  if (firstNameIsValid !== true) {
+    formData[0].setAttribute("data-error-visible", true)
+    formData[0].setAttribute(
+      "data-error",
+      "Veuillez entrer 2 caractères ou plus pour le champ du prénom."
+    )
+  } else {
+    formData[0].removeAttribute("data-error-visible")
+    formData[0].removeAttribute("data-error")
+  }
+
+  if (lastNameIsValid !== true) {
+    formData[1].setAttribute("data-error-visible", true)
+    formData[1].setAttribute(
+      "data-error",
+      "Veuillez entrer 2 caractères ou plus pour le champ du nom."
+    )
+  } else {
+    formData[1].removeAttribute("data-error-visible")
+    formData[1].removeAttribute("data-error")
+  }
+  if (emailIsValid !== true) {
+    formData[2].setAttribute("data-error-visible", true)
+    formData[2].setAttribute(
+      "data-error",
+      "Vérifiez que l'email saisi est valide."
+    )
+  } else {
+    formData[2].removeAttribute("data-error-visible")
+    formData[2].removeAttribute("data-error")
+  }
+  if (birthdateIsValid !== true) {
+    formData[3].setAttribute("data-error-visible", true)
+    formData[3].setAttribute(
+      "data-error",
+      "Vous devez entrer votre date de naissance."
+    )
+  } else {
+    formData[3].removeAttribute("data-error-visible")
+    formData[3].removeAttribute("data-error")
+  }
+  if (tournamentQuantityIsValid !== true) {
+    formData[4].setAttribute("data-error-visible", true)
+    formData[4].setAttribute(
+      "data-error",
+      "Vous devez saisir un nombre."
+    )
+  } else {
+    formData[4].removeAttribute("data-error-visible")
+    formData[4].removeAttribute("data-error")
+  }
+  if (tournamentLocationIsValid !== true) {
+    formData[5].setAttribute("data-error-visible", true)
+    formData[5].setAttribute(
+      "data-error",
+      "Vous devez choisir une option."
+    )
+  } else {
+    formData[5].removeAttribute("data-error-visible")
+    formData[5].removeAttribute("data-error")
+  }
+  if (TOSAcceptedIsValid !== true) {
+    formData[6].setAttribute("data-error-visible", true)
+    formData[6].setAttribute(
+      "data-error",
+      "Vous devez vérifier que vous acceptez les termes et conditions."
+    )
+  } else {
+    formData[6].removeAttribute("data-error-visible")
+    formData[6].removeAttribute("data-error")
   }
 }
