@@ -1,3 +1,28 @@
+// 1- Variables
+let validationStatus
+const firstNameInput = document.getElementById("first")
+const lastNameInput = document.getElementById("last")
+const emailInput = document.getElementById("email")
+const birthdateInput = document.getElementById("birthdate")
+const tournamentQuantityInput = document.getElementById("quantity")
+const locationRadioButtons = document.querySelectorAll(
+  ".locationData .checkbox-input"
+)
+const locationInput = document.querySelector(
+  ".locationData > .checkbox-input"
+)
+const TOSCheckbox = document.getElementById("checkbox1")
+const modalBody = document.querySelector(".modal-body")
+const modalForm = document.querySelector(".modal-body > form")
+let validationCondition
+
+// DOM Elements
+const modalbg = document.querySelector(".bground")
+const modalBtn = document.querySelectorAll(".modal-btn")
+const formData = document.querySelectorAll(".formData")
+const modalCloseButton = document.querySelector(".close")
+const modalSubmitButton = document.querySelector(".btn-submit")
+
 function editNav() {
   var x = document.getElementById("myTopnav")
   if (x.className === "topnav") {
@@ -7,14 +32,12 @@ function editNav() {
   }
 }
 
-// DOM Elements
-const modalbg = document.querySelector(".bground")
-const modalBtn = document.querySelectorAll(".modal-btn")
-const formData = document.querySelectorAll(".formData")
-const modalCloseButton = document.querySelector(".close")
-const modalSubmitButton = document.querySelector(".btn-submit")
-
 // Add event listener to form inputs
+
+// 2- Code moteur
+// Add an event listener on each form input to display error message where needed
+// formData.forEach((entry) => entry.addEventListener("click"), validate())
+// formData.forEach((btn) => btn.addEventListener("change", validate))
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal))
@@ -24,25 +47,65 @@ function launchModal() {
   modalbg.style.display = "block"
 }
 
+// Submit modal form event
+modalSubmitButton.addEventListener("click", validate)
+
 // Close modal event
 modalCloseButton.addEventListener("click", closeModal)
 
-// Close modal form
+// Close modal form, hide all error messages and reset input fields values
 function closeModal() {
+  for (let formItem of formData) {
+    formItem.setAttribute("data-error-visible", false)
+  }
   modalbg.style.display = "none"
+  let inputFields = document.querySelectorAll(".formData input")
+  for (let field of inputFields) {
+    field.value = null
+  }
+  for (let button of locationRadioButtons) {
+    button.checked = false
+  }
 }
 
 // Modal Form validation status
-let firstNameIsValid
-let lastNameIsValid
-let emailIsValid
-let birthdateIsValid
-let tournamentQuantityIsValid
-let tournamentLocationIsValid
-let TOSAcceptedIsValid
+let formEntries = {
+  firstName: {
+    status: false,
+    errorMessage:
+      "Veuillez entrer 2 caractères ou plus pour le champ du prénom.",
+  },
+  lastName: {
+    status: false,
+    errorMessage:
+      "Veuillez entrer 2 caractères ou plus pour le champ du nom.",
+  },
+  email: {
+    status: false,
+    errorMessage: "Vérifiez que l'email saisi est valide.",
+  },
+  birthdate: {
+    status: false,
+    errorMessage: "Vous devez entrer votre date de naissance.",
+  },
+  tournamentQuantity: {
+    status: false,
+    errorMessage: "Vous devez saisir un nombre.",
+  },
+  tournamentLocation: {
+    status: false,
+    errorMessage: "Vous devez choisir une option.",
+  },
+  TOSAccepted: {
+    status: false,
+    errorMessage:
+      "Vous devez vérifier que vous acceptez les termes et conditions.",
+  },
+}
 
 // Checks all inputs and prevents submit if validation fails
 function validate() {
+  validationStatus = true
   checkFirstName()
   checkLastName()
   checkEmail()
@@ -50,169 +113,118 @@ function validate() {
   checkTournamentQuantity()
   checkTournamentLocation()
   checkTOS()
-  if (
-    firstNameIsValid !== true ||
-    lastNameIsValid !== true ||
-    emailIsValid !== true ||
-    birthdateIsValid !== true ||
-    tournamentQuantityIsValid !== true ||
-    tournamentLocationIsValid !== true ||
-    TOSAcceptedIsValid !== true
-  ) {
-    console.log("Validation failed")
+  for (let [key, value] of Object.entries(formEntries)) {
+    if (!value.status) {
+      validationStatus = false
+    }
+  }
+  if (!validationStatus) {
     event.preventDefault()
-    displayFormErrors()
+  } else {
+    displayValidation()
   }
 }
 
 // Check if first name is at least 2 characters long
 function checkFirstName() {
-  if (document.getElementById("first").value.length >= 2) {
-    firstNameIsValid = true
-  }
+  validationCondition = firstNameInput.value.length >= 2
+  displayFormErrors(firstNameInput, "firstName", validationCondition)
 }
 
 // Check if last name is at least 2 characters long
 function checkLastName() {
-  if (document.getElementById("last").value.length >= 2) {
-    lastNameIsValid = true
-  }
+  validationCondition = lastNameInput.value.length >= 2
+  displayFormErrors(lastNameInput, "lastName", validationCondition)
 }
 
 // Check if email is valid
 function checkEmail() {
-  let inputtedEmail = document.getElementById("email").value
-  if (
+  validationCondition =
     /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
-      inputtedEmail
+      emailInput.value
     )
-  ) {
-    emailIsValid = true
-  }
+  displayFormErrors(emailInput, "email", validationCondition)
 }
 
 // Check if birthdate is filled
-// function checkBirthdate() {
-//   if (
-//     Date.parse(document.getElementById("birthdate").value) !== NaN ||
-//     Date.parse(document.getElementById("birthdate").value) !==
-//       undefined
-//   ) {
-//     birthdateIsValid = true
-//   }
-// }
-
 function checkBirthdate() {
-  let inputtedBirthdate = Date.parse(
-    document.getElementById("birthdate").value
-  )
-  if (!isNaN(inputtedBirthdate)) {
-    birthdateIsValid = true
-  }
+  validationCondition = !isNaN(Date.parse(birthdateInput.value))
+  displayFormErrors(birthdateInput, "birthdate", validationCondition)
 }
 
 // Check if tournament quantity is a number - Note : HTML5 already does it, so this is more of a double-check
 function checkTournamentQuantity() {
-  let inputtedQuantity = parseInt(
-    document.getElementById("quantity").value
+  let inputtedQuantity = parseInt(tournamentQuantityInput.value)
+  validationCondition = !isNaN(inputtedQuantity)
+  displayFormErrors(
+    tournamentQuantityInput,
+    "tournamentQuantity",
+    validationCondition
   )
-  if (isNaN(inputtedQuantity) || inputtedQuantity == undefined) {
-    tournamentQuantityIsValid = false
-  } else {
-    tournamentQuantityIsValid = true
-  }
 }
 
 // Check if a tournament location is selected by looping through the corresponding checkbox-input for checked status
 function checkTournamentLocation() {
-  let locationRadioButtons =
-    document.querySelectorAll(".checkbox-input")
-  let i = 0
-  while (i < 6) {
-    if (locationRadioButtons[i].checked == true) {
-      tournamentLocationIsValid = true
+  validationCondition = false
+  locationRadioButtons.forEach((button) => {
+    if (button.checked) {
+      validationCondition = true
     }
-    i += 1
-  }
+  })
+  displayFormErrors(
+    locationInput,
+    "tournamentLocation",
+    validationCondition
+  )
 }
 
 // Check if term of use is ticked
 function checkTOS() {
-  if (document.getElementById("checkbox1").checked) {
-    TOSAcceptedIsValid = true
+  validationCondition = TOSCheckbox.checked
+  displayFormErrors(TOSCheckbox, "TOSAccepted", validationCondition)
+}
+
+// Display error messages for fields that did not pass the validation process
+function displayFormErrors(target, targetEntry, validationCondition) {
+  listenToInput()
+  let errorMessage
+  for (let [key, value] of Object.entries(formEntries)) {
+    if (key.includes(targetEntry)) {
+      value.status = validationCondition
+      if (!value.status) {
+        errorMessage = value.errorMessage
+        target.parentNode.setAttribute("data-error", errorMessage)
+      }
+    }
+    target.parentNode.setAttribute(
+      "data-error-visible",
+      !validationCondition
+    )
   }
 }
 
-function displayFormErrors() {
-  if (firstNameIsValid !== true) {
-    formData[0].setAttribute("data-error-visible", true)
-    formData[0].setAttribute(
-      "data-error",
-      "Veuillez entrer 2 caractères ou plus pour le champ du prénom."
-    )
-  } else {
-    formData[0].removeAttribute("data-error-visible")
-    formData[0].removeAttribute("data-error")
+// Listen to input changes after validation failed to help user to correctly fill the fields
+function listenToInput() {
+  firstNameInput.addEventListener("input", checkFirstName)
+  lastNameInput.addEventListener("input", checkLastName)
+  emailInput.addEventListener("input", checkEmail)
+  birthdateInput.addEventListener("change", checkBirthdate)
+  tournamentQuantityInput.addEventListener(
+    "change",
+    checkTournamentQuantity
+  )
+  for (let button of locationRadioButtons) {
+    button.addEventListener("change", checkTournamentLocation)
   }
+  TOSCheckbox.addEventListener("change", checkTOS)
+}
 
-  if (lastNameIsValid !== true) {
-    formData[1].setAttribute("data-error-visible", true)
-    formData[1].setAttribute(
-      "data-error",
-      "Veuillez entrer 2 caractères ou plus pour le champ du nom."
-    )
-  } else {
-    formData[1].removeAttribute("data-error-visible")
-    formData[1].removeAttribute("data-error")
-  }
-  if (emailIsValid !== true) {
-    formData[2].setAttribute("data-error-visible", true)
-    formData[2].setAttribute(
-      "data-error",
-      "Vérifiez que l'email saisi est valide."
-    )
-  } else {
-    formData[2].removeAttribute("data-error-visible")
-    formData[2].removeAttribute("data-error")
-  }
-  if (birthdateIsValid !== true) {
-    formData[3].setAttribute("data-error-visible", true)
-    formData[3].setAttribute(
-      "data-error",
-      "Vous devez entrer votre date de naissance."
-    )
-  } else {
-    formData[3].removeAttribute("data-error-visible")
-    formData[3].removeAttribute("data-error")
-  }
-  if (tournamentQuantityIsValid !== true) {
-    formData[4].setAttribute("data-error-visible", true)
-    formData[4].setAttribute(
-      "data-error",
-      "Vous devez saisir un nombre."
-    )
-  } else {
-    formData[4].removeAttribute("data-error-visible")
-    formData[4].removeAttribute("data-error")
-  }
-  if (tournamentLocationIsValid !== true) {
-    formData[5].setAttribute("data-error-visible", true)
-    formData[5].setAttribute(
-      "data-error",
-      "Vous devez choisir une option."
-    )
-  } else {
-    formData[5].removeAttribute("data-error-visible")
-    formData[5].removeAttribute("data-error")
-  }
-  if (TOSAcceptedIsValid !== true) {
-    formData[6].setAttribute("data-error-visible", true)
-    formData[6].setAttribute(
-      "data-error",
-      "Vous devez vérifier que vous acceptez les termes et conditions."
-    )
-  } else {
-    formData[6].removeAttribute("data-error-visible")
-    formData[6].removeAttribute("data-error")
-  }
+// Display confirmation message on successful validation
+function displayValidation() {
+  event.preventDefault()
+  const confirmationElement = document.createElement("p")
+  confirmationElement.textContent = "Merci pour votre inscription !"
+  modalForm.style.display = "none"
+  modalBody.appendChild(confirmationElement)
+  confirmationElement.classList.add("confirmation-text")
 }
