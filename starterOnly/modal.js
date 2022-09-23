@@ -1,4 +1,12 @@
 // 1- Variables
+let validationCondition
+
+// DOM Elements
+const modalbg = document.querySelector(".bground")
+const modalBtn = document.querySelectorAll(".modal-btn")
+const formData = document.querySelectorAll(".formData")
+const modalCloseButton = document.querySelector(".close")
+const modalSubmitButton = document.querySelector(".btn-submit")
 let validationStatus
 const firstNameInput = document.getElementById("first")
 const lastNameInput = document.getElementById("last")
@@ -14,14 +22,7 @@ const locationInput = document.querySelector(
 const TOSCheckbox = document.getElementById("checkbox1")
 const modalBody = document.querySelector(".modal-body")
 const modalForm = document.querySelector(".modal-body > form")
-let validationCondition
-
-// DOM Elements
-const modalbg = document.querySelector(".bground")
-const modalBtn = document.querySelectorAll(".modal-btn")
-const formData = document.querySelectorAll(".formData")
-const modalCloseButton = document.querySelector(".close")
-const modalSubmitButton = document.querySelector(".btn-submit")
+let modalBodyInitialHeight
 
 function editNav() {
   var x = document.getElementById("myTopnav")
@@ -32,23 +33,23 @@ function editNav() {
   }
 }
 
-// Add event listener to form inputs
-
 // 2- Code moteur
-// Add an event listener on each form input to display error message where needed
-// formData.forEach((entry) => entry.addEventListener("click"), validate())
-// formData.forEach((btn) => btn.addEventListener("change", validate))
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal))
 
-// launch modal form
+// launch modal form and make the TOS box unchecked by default
 function launchModal() {
   modalbg.style.display = "block"
+  TOSCheckbox.checked = false
 }
 
 // Submit modal form event
-modalSubmitButton.addEventListener("click", validate)
+// modalSubmitButton.addEventListener("click", validate)
+modalSubmitButton.addEventListener(
+  "click",
+  displayConfirmationMessage
+)
 
 // Close modal event
 modalCloseButton.addEventListener("click", closeModal)
@@ -56,7 +57,8 @@ modalCloseButton.addEventListener("click", closeModal)
 // Close modal form, hide all error messages and reset input fields values
 function closeModal() {
   for (let formItem of formData) {
-    formItem.setAttribute("data-error-visible", false)
+    formItem.removeAttribute("data-error-visible")
+    formItem.removeAttribute("data-error")
   }
   modalbg.style.display = "none"
   let inputFields = document.querySelectorAll(".formData input")
@@ -121,7 +123,7 @@ function validate() {
   if (!validationStatus) {
     event.preventDefault()
   } else {
-    displayValidation()
+    displayConfirmationMessage()
   }
 }
 
@@ -220,11 +222,27 @@ function listenToInput() {
 }
 
 // Display confirmation message on successful validation
-function displayValidation() {
+function displayConfirmationMessage() {
   event.preventDefault()
+  modalBodyInitialHeight = modalForm.scrollHeight
+  modalForm.remove()
+  const confirmationBlock = document.createElement("div")
+  modalBody.appendChild(confirmationBlock)
+  confirmationBlock.setAttribute(
+    "style",
+    `height: ${modalBodyInitialHeight}px; display: flex;flex-direction: column;justify-content: space-between;align-items: center;`
+  )
   const confirmationElement = document.createElement("p")
-  confirmationElement.textContent = "Merci pour votre inscription !"
-  modalForm.style.display = "none"
-  modalBody.appendChild(confirmationElement)
-  confirmationElement.classList.add("confirmation-text")
+  const closeConfirmation = document.createElement("button")
+  confirmationElement.textContent = "Merci pour votre inscription"
+  confirmationElement.setAttribute(
+    "style",
+    "margin-top: 60%; font-size: 35px; text-align: center;"
+  )
+  closeConfirmation.textContent = "Fermer"
+  confirmationBlock.appendChild(confirmationElement)
+  confirmationBlock.appendChild(closeConfirmation)
+  closeConfirmation.classList.add("btn-submit")
+  closeConfirmation.classList.add("button")
+  closeConfirmation.addEventListener("click", closeModal)
 }
