@@ -1,13 +1,7 @@
 // 1- Variables
-let validationCondition
 
 // DOM Elements
 const modalbg = document.querySelector(".bground")
-const modalBtn = document.querySelectorAll(".modal-btn")
-const formData = document.querySelectorAll(".formData")
-const modalCloseButton = document.querySelector(".close")
-const modalSubmitButton = document.querySelector(".btn-submit")
-let validationStatus
 const firstNameInput = document.getElementById("first")
 const lastNameInput = document.getElementById("last")
 const emailInput = document.getElementById("email")
@@ -20,57 +14,8 @@ const locationInput = document.querySelector(
   ".locationData > .checkbox-input"
 )
 const TOSCheckbox = document.getElementById("checkbox1")
-const modalBody = document.querySelector(".modal-body")
-const modalForm = document.querySelector(".modal-body > form")
-let modalBodyInitialHeight
 
-function editNav() {
-  var x = document.getElementById("myTopnav")
-  if (x.className === "topnav") {
-    x.className += " responsive"
-  } else {
-    x.className = "topnav"
-  }
-}
-
-// 2- Code moteur
-
-// launch modal event
-modalBtn.forEach((btn) => btn.addEventListener("click", launchModal))
-
-// launch modal form and make the TOS box unchecked by default
-function launchModal() {
-  modalbg.style.display = "block"
-  TOSCheckbox.checked = false
-}
-
-// Submit modal form event
-// modalSubmitButton.addEventListener("click", validate)
-modalSubmitButton.addEventListener(
-  "click",
-  displayConfirmationMessage
-)
-
-// Close modal event
-modalCloseButton.addEventListener("click", closeModal)
-
-// Close modal form, hide all error messages and reset input fields values
-function closeModal() {
-  for (let formItem of formData) {
-    formItem.removeAttribute("data-error-visible")
-    formItem.removeAttribute("data-error")
-  }
-  modalbg.style.display = "none"
-  let inputFields = document.querySelectorAll(".formData input")
-  for (let field of inputFields) {
-    field.value = null
-  }
-  for (let button of locationRadioButtons) {
-    button.checked = false
-  }
-}
-
-// Modal Form validation status
+// Modal Form validation status and errorMessage to display for each input field if its validation fails
 let formEntries = {
   firstName: {
     status: false,
@@ -105,107 +50,27 @@ let formEntries = {
   },
 }
 
-// Checks all inputs and prevents submit if validation fails
-function validate() {
-  validationStatus = true
-  checkFirstName()
-  checkLastName()
-  checkEmail()
-  checkBirthdate()
-  checkTournamentQuantity()
-  checkTournamentLocation()
-  checkTOS()
-  for (let [key, value] of Object.entries(formEntries)) {
-    if (!value.status) {
-      validationStatus = false
-    }
-  }
-  if (!validationStatus) {
-    event.preventDefault()
-  } else {
-    displayConfirmationMessage()
-  }
-}
+// 2- Code moteur
 
-// Check if first name is at least 2 characters long
-function checkFirstName() {
-  validationCondition = firstNameInput.value.length >= 2
-  displayFormErrors(firstNameInput, "firstName", validationCondition)
-}
+// Add an event listener to the mobile navigation icon
+document
+  .querySelector(".main-navbar")
+  .addEventListener("click", editNav)
 
-// Check if last name is at least 2 characters long
-function checkLastName() {
-  validationCondition = lastNameInput.value.length >= 2
-  displayFormErrors(lastNameInput, "lastName", validationCondition)
-}
+// launch modal event
+document
+  .querySelectorAll(".modal-btn")
+  .forEach((btn) => btn.addEventListener("click", launchModal))
 
-// Check if email is valid
-function checkEmail() {
-  validationCondition =
-    /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
-      emailInput.value
-    )
-  displayFormErrors(emailInput, "email", validationCondition)
-}
+// Submit modal form event
+document
+  .querySelector(".btn-submit")
+  .addEventListener("click", validate)
 
-// Check if birthdate is filled
-function checkBirthdate() {
-  validationCondition = !isNaN(Date.parse(birthdateInput.value))
-  displayFormErrors(birthdateInput, "birthdate", validationCondition)
-}
+// Close modal event
+document.querySelector(".close").addEventListener("click", closeModal)
 
-// Check if tournament quantity is a number - Note : HTML5 already does it, so this is more of a double-check
-function checkTournamentQuantity() {
-  let inputtedQuantity = parseInt(tournamentQuantityInput.value)
-  validationCondition = !isNaN(inputtedQuantity)
-  displayFormErrors(
-    tournamentQuantityInput,
-    "tournamentQuantity",
-    validationCondition
-  )
-}
-
-// Check if a tournament location is selected by looping through the corresponding checkbox-input for checked status
-function checkTournamentLocation() {
-  validationCondition = false
-  locationRadioButtons.forEach((button) => {
-    if (button.checked) {
-      validationCondition = true
-    }
-  })
-  displayFormErrors(
-    locationInput,
-    "tournamentLocation",
-    validationCondition
-  )
-}
-
-// Check if term of use is ticked
-function checkTOS() {
-  validationCondition = TOSCheckbox.checked
-  displayFormErrors(TOSCheckbox, "TOSAccepted", validationCondition)
-}
-
-// Display error messages for fields that did not pass the validation process
-function displayFormErrors(target, targetEntry, validationCondition) {
-  listenToInput()
-  let errorMessage
-  for (let [key, value] of Object.entries(formEntries)) {
-    if (key.includes(targetEntry)) {
-      value.status = validationCondition
-      if (!value.status) {
-        errorMessage = value.errorMessage
-        target.parentNode.setAttribute("data-error", errorMessage)
-      }
-    }
-    target.parentNode.setAttribute(
-      "data-error-visible",
-      !validationCondition
-    )
-  }
-}
-
-// Listen to input changes after validation failed to help user to correctly fill the fields
+// Listen to input changes after validation failed to help user correctly fill the fields
 function listenToInput() {
   firstNameInput.addEventListener("input", checkFirstName)
   lastNameInput.addEventListener("input", checkLastName)
@@ -221,28 +86,164 @@ function listenToInput() {
   TOSCheckbox.addEventListener("change", checkTOS)
 }
 
+// 3- Fonctions
+
+// launch modal form
+function launchModal() {
+  modalbg.style.display = "block"
+}
+
+// Open the navigation menu on mobile
+function editNav() {
+  const mobileNavigationIcon = document.querySelector(".icon")
+  let topNavigation = document.getElementById("myTopnav")
+  if (topNavigation.className === "topnav") {
+    topNavigation.className += " responsive"
+    mobileNavigationIcon.style.color = "white"
+  } else {
+    topNavigation.className = "topnav"
+    mobileNavigationIcon.removeAttribute("style")
+  }
+}
+
+// Close modal form
+function closeModal() {
+  modalbg.style.display = "none"
+}
+
+// Checks all inputs and prevents submit if validation fails
+function validate(event) {
+  let validationStatus = true
+  checkFirstName()
+  checkLastName()
+  checkEmail()
+  checkBirthdate()
+  checkTournamentQuantity()
+  checkTournamentLocation()
+  checkTOS()
+  for (let [key, value] of Object.entries(formEntries)) {
+    if (!value.status) {
+      validationStatus = false
+    }
+  }
+  if (!validationStatus) {
+    event.preventDefault()
+  } else {
+    displayConfirmationMessage(event)
+  }
+}
+
+// Check if first name is at least 2 characters long
+function checkFirstName() {
+  displayFormErrors(
+    firstNameInput,
+    "firstName",
+    firstNameInput.value.length >= 2
+  )
+}
+
+// Check if last name is at least 2 characters long
+function checkLastName() {
+  displayFormErrors(
+    lastNameInput,
+    "lastName",
+    lastNameInput.value.length >= 2
+  )
+}
+
+// Check if email is valid
+function checkEmail() {
+  displayFormErrors(
+    emailInput,
+    "email",
+    /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/.test(
+      emailInput.value
+    )
+  )
+}
+
+// Check if birthdate is filled
+function checkBirthdate() {
+  displayFormErrors(
+    birthdateInput,
+    "birthdate",
+    !isNaN(Date.parse(birthdateInput.value))
+  )
+}
+
+// Check if tournament quantity is a number - Note : HTML5 already does it, so this is more of a double-check
+function checkTournamentQuantity() {
+  displayFormErrors(
+    tournamentQuantityInput,
+    "tournamentQuantity",
+    !isNaN(parseInt(tournamentQuantityInput.value))
+  )
+}
+
+// Check if a tournament location is selected by looping through the corresponding checkbox-input for checked status
+function checkTournamentLocation() {
+  let validationCondition = false
+  locationRadioButtons.forEach((button) => {
+    if (button.checked) {
+      validationCondition = true
+    }
+  })
+  displayFormErrors(
+    locationInput,
+    "tournamentLocation",
+    validationCondition
+  )
+}
+
+// Check if term of use is ticked
+function checkTOS() {
+  displayFormErrors(TOSCheckbox, "TOSAccepted", TOSCheckbox.checked)
+}
+
+// Display error messages for fields that did not pass the validation process
+function displayFormErrors(target, targetEntry, validationCondition) {
+  listenToInput()
+  for (let [key, value] of Object.entries(formEntries)) {
+    // Finds the field and update its (boolean) validation status in object formEntries
+    if (key.includes(targetEntry)) {
+      value.status = validationCondition
+      if (!value.status) {
+        target.parentNode.setAttribute(
+          "data-error",
+          value.errorMessage
+        )
+      }
+    }
+    target.parentNode.setAttribute(
+      "data-error-visible",
+      !validationCondition
+    )
+  }
+}
+
 // Display confirmation message on successful validation
-function displayConfirmationMessage() {
+function displayConfirmationMessage(event) {
+  const modalForm = document.querySelector(".modal-body > form")
+  let modalBodyInitialHeight = modalForm.scrollHeight
   event.preventDefault()
-  modalBodyInitialHeight = modalForm.scrollHeight
   modalForm.remove()
   const confirmationBlock = document.createElement("div")
-  modalBody.appendChild(confirmationBlock)
+  document.querySelector(".modal-body").appendChild(confirmationBlock)
   confirmationBlock.setAttribute(
     "style",
     `height: ${modalBodyInitialHeight}px; display: flex;flex-direction: column;justify-content: space-between;align-items: center;`
   )
   const confirmationElement = document.createElement("p")
-  const closeConfirmation = document.createElement("button")
   confirmationElement.textContent = "Merci pour votre inscription"
   confirmationElement.setAttribute(
     "style",
     "margin-top: 60%; font-size: 35px; text-align: center;"
   )
+  const closeConfirmation = document.createElement("button")
   closeConfirmation.textContent = "Fermer"
-  confirmationBlock.appendChild(confirmationElement)
-  confirmationBlock.appendChild(closeConfirmation)
   closeConfirmation.classList.add("btn-submit")
   closeConfirmation.classList.add("button")
   closeConfirmation.addEventListener("click", closeModal)
+  confirmationBlock.appendChild(confirmationElement)
+  confirmationBlock.appendChild(closeConfirmation)
 }
