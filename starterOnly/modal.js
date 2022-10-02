@@ -7,6 +7,8 @@ const lastNameInput = document.getElementById("last")
 const emailInput = document.getElementById("email")
 const birthdateInput = document.getElementById("birthdate")
 const tournamentQuantityInput = document.getElementById("quantity")
+
+// locationData class added to the location radio buttons since .checkbox-input applies to all input checkboxes and radio buttons of the form.
 const locationRadioButtons = document.querySelectorAll(
   ".locationData .checkbox-input"
 )
@@ -104,6 +106,7 @@ function editNav() {
     topNavigation.className = "topnav"
     mobileNavigationIcon.removeAttribute("style")
   }
+  return false
 }
 
 // Close modal form
