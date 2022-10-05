@@ -179,7 +179,7 @@ function checkTournamentQuantity() {
   displayFormErrors(
     tournamentQuantityInput,
     "tournamentQuantity",
-    !isNaN(parseInt(tournamentQuantityInput.value))
+    !isNaN(parseInt(tournamentQuantityInput.value >= 0))
   )
 }
 
